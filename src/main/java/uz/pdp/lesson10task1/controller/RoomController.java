@@ -56,7 +56,7 @@ public class RoomController {
     public String editRoom(@PathVariable Integer id, @RequestBody RoomDTO roomDTO){
         Optional<Room> byId = roomRepository.findById(id);
         if (!byId.isPresent()) return "This id is not found";
-        if (roomRepository.existsByNumber(roomDTO.getNumber())) return "Already exist";
+        if (roomRepository.existsByNumber(roomDTO.getNumber())) return "Already exist ";
         Room room1 = byId.get();
         room1.setSize(roomDTO.getSize());
         room1.setNumber(roomDTO.getNumber());
