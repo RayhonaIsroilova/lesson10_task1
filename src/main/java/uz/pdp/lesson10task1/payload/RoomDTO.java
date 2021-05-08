@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class RoomDTO {
-    private Integer number,floor,size;
+    private Integer id,number, floor, size;
     private Integer hotelId;
 }

@@ -21,22 +21,20 @@ public class HotelController {
 
     @GetMapping("/{id}")
     public Hotel hotelOnePageable(@PathVariable Integer id) {
-        if (!hotelRepository.findById(id).isPresent()) {
-            return null;
+        Optional<Hotel> byId1 = hotelRepository.findById(id);
+        if (!byId1.isPresent()) {
+            return new Hotel();
         }
-        Optional<Hotel> byId = hotelRepository.findById(id);
-        return byId.get();
+        return byId1.get();
     }
 
 
     @PostMapping("/add")
     public String addHotel(@RequestBody Hotel newHotel) {
-        for (Hotel hotel : hotelRepository.findAll()) {
-            if (hotel.getName().equals(newHotel.getName())) {
-                return "this hotel allready exist";
-            }
-        }
-        hotelRepository.save(newHotel);
+        Hotel hotel = new Hotel();
+        if (hotelRepository.existsByName(newHotel.getName())) return "This hotel is already exist";
+        hotel.setName(newHotel.getName());
+        hotelRepository.save(hotel);
         return "success";
     }
 

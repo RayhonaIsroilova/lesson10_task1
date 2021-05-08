@@ -14,7 +14,9 @@ public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Integer number,floor,size;
+    @Column(unique = true)
+    private Integer number;
+    private Integer floor, size;
     @ManyToOne
     private Hotel hotel;
 }
