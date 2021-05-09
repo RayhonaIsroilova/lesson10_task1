@@ -28,7 +28,7 @@ public class RoomController {
     @GetMapping("/room/{id}")
     public Room getRoom(@PathVariable Integer id) {
         Optional<Room> byId = roomRepository.findById(id);
-        if (!byId.isPresent()){
+        if (!byId.isPresent()) {
             return new Room();
         }
         return byId.get();
@@ -43,10 +43,12 @@ public class RoomController {
         return roomRepository.findAllByHotelId(id, pageable);
     }
 
+    //post uchun ham 2ta method men uchun hammasi to'ri :) holases 1-ni oling holases 2-ni
+
     @PostMapping
     public String addRoom(@RequestBody RoomDTO roomDTO) {
         Room room1 = new Room();
-        if (roomRepository.existsById(roomDTO.getId())&& roomRepository.existsByNumber(roomDTO.getNumber())) {
+        if (roomRepository.existsById(roomDTO.getId()) && roomRepository.existsByNumber(roomDTO.getNumber())) {
             return "qo`o`o`o`shoooomiysiz chunki sizzi shartizga to'ri keeelaaaadiiiii ):" +
                     "bu id bilan bu number allaqachon zaynit bo'gan";
         }
@@ -57,6 +59,26 @@ public class RoomController {
         roomRepository.save(room1);
         return "barakalla qo'shildi :)";
     }
+
+    @PostMapping("/add")
+    public String addRoom(@RequestBody Room newRoom) {
+
+        if (!hotelRepository.findById(newRoom.getHotel().getId()).isPresent()) {
+            return "hotel no found";
+        }
+
+        for (Room room : roomRepository.findAll()) {
+            if (newRoom.getHotel().getId().equals(room.getHotel().getId())
+                    &&
+                    newRoom.getNumber().equals(room.getNumber()))
+                return "siz qo'shmoqchi bo'lgan room shu mehmonxonada mavjud mavjud";
+        }
+        roomRepository.save(newRoom);
+        return "room successfully added";
+    }
+
+
+    //2ta variant put uchun qaysi biri to'ri bo'sa shuni oling chunki men uchun ikkisiyam to'ri :)
 
     @PutMapping("/edit/{id}")
     public String editRoom(@PathVariable Integer id, @RequestBody RoomDTO roomDTO) {
@@ -72,6 +94,31 @@ public class RoomController {
         room1.setHotel(hotelRepository.getOne(roomDTO.getHotelId()));
         roomRepository.save(room1);
         return "barakalla o'zgartira oldiz :)";
+    }
+
+    @PutMapping("/add/{roomId}")
+    public String setRoom(@PathVariable Integer roomId, @RequestBody Room newRoom) { //Faqatgina Hotel Id jo'natiladi
+        Optional<Room> byId = roomRepository.findById(roomId);
+        if (!byId.isPresent()) {
+            return "room not found";
+        }
+        Room roomOld = byId.get();
+        if (newRoom.getNumber() != null) roomOld.setNumber(newRoom.getNumber());
+        if (newRoom.getFloor() != null) roomOld.setFloor(newRoom.getFloor());
+        if (newRoom.getSize() != null) roomOld.setSize(newRoom.getSize());
+        if (newRoom.getHotel().getId() != null) roomOld.getHotel().setId(newRoom.getHotel().getId());
+
+        int count = 0;
+        for (Room room : roomRepository.findAll()) {
+            if (roomOld.getHotel().getId().equals(room.getHotel().getId())
+                    &&
+                    newRoom.getNumber().equals(room.getNumber()))
+                count++; //nechta shunday room borligi aniqlanadi 1 ta bo'lishi kk
+        }
+        if (count == 1) {
+            roomRepository.save(roomOld);
+            return "success";
+        } else return "Error";
     }
 
     @DeleteMapping("/delete/{id}")
